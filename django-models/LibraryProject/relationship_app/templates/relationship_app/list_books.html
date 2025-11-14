@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Books</title>
+    <style>
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+    {% if messages %}
+        {% for message in messages %}
+            <p class="{% if 'error' in message.tags %}error{% else %}success{% endif %}">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+    
+    <ul>
+        {% for book in books %}
+        <li>{{ book.title }} by {{ book.author.name }}</li>
+        {% endfor %}
+    </ul>
+    
+    {% if perms.relationship_app.can_add_book %}
+    <a href="{% url 'relationship_app:add_book' %}">Add New Book</a>
+    {% endif %}
+    
+    <br>
+    <a href="{% url 'relationship_app:login' %}">Login</a> |
+    <a href="{% url 'relationship_app:register' %}">Register</a>
+</body>
+</html>

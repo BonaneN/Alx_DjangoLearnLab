@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Librarian View</title>
+</head>
+<body>
+    <h1>Librarian Dashboard</h1>
+    <p>Welcome, {{ user.username }}! You have librarian privileges.</p>
+    <p>You can manage books, checkouts, and member accounts here.</p>
+    <a href="{% url 'relationship_app:list_books' %}">Back to Books</a>
+</body>
+</html>
