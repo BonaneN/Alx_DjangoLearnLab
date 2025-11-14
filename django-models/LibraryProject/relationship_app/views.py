@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import DetailView
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
 from django.contrib import messages
-from .models import Book, Library
+from .models import Book, Library, UserProfile
 from .forms import BookForm
 
 # Task 1 - Function-based view
@@ -17,17 +18,41 @@ class LibraryDetailView(DetailView):
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
-# Task 2 - Registration view
-def register(request):
+# Task 2 - Authentication views
+def user_register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Registration successful! You can now log in.')
-            return redirect('relationship_app:login')
+            user = form.save()
+            login(request, user)  # Log the user in after registration
+            messages.success(request, 'Registration successful!')
+            return redirect('relationship_app:list_books')
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
+
+# Task 3 - Role checking functions
+def is_admin(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
+
+def is_librarian(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+
+def is_member(user):
+    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
+
+# Task 3 - Role-based views with @user_passes_test decorator
+@user_passes_test(is_admin, login_url='relationship_app:login')
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@user_passes_test(is_librarian, login_url='relationship_app:login')
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@user_passes_test(is_member, login_url='relationship_app:login')
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
 
 # Task 4 - Permission-based views
 @permission_required('relationship_app.can_add_book')
