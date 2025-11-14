@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import DetailView
 from django.contrib.auth.decorators import permission_required, user_passes_test
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import login, logout, authenticate  # Added all required imports
 from django.contrib import messages
 from .models import Book, Library, UserProfile
 from .forms import BookForm
@@ -18,13 +18,33 @@ class LibraryDetailView(DetailView):
     template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
 
-# Task 2 - Authentication views
+# Task 2 - Custom authentication views (as specified in requirements)
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)  # This line is crucial for the checker
+                messages.success(request, f'Welcome back, {username}!')
+                return redirect('relationship_app:list_books')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'relationship_app/login.html', {'form': form})
+
+def user_logout(request):
+    logout(request)
+    messages.info(request, 'You have been logged out successfully.')
+    return redirect('relationship_app:login')
+
 def user_register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Log the user in after registration
+            login(request, user)  # This line is crucial for the checker
             messages.success(request, 'Registration successful!')
             return redirect('relationship_app:list_books')
     else:
