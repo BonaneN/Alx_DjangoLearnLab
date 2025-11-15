@@ -1,9 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ action }} Book</title>
-</head>
+<html>
+<head><title>{{ action }} Book</title></head>
 <body>
     <h1>{{ action }} Book</h1>
     <form method="post">
@@ -11,5 +8,6 @@
         {{ form.as_p }}
         <button type="submit">{{ action }} Book</button>
     </form>
+    <a href="{% url 'list_books' %}">Back to books</a>
 </body>
 </html>

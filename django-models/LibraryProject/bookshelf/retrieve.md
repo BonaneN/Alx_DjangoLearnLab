@@ -1,7 +1,6 @@
-# retrieve operation
-from bookshelf import Book
 
-book=Book.objects.get(title="1984")
-book.title
-book.author
-book.publication_year
+from bookshelf.models import Book
+
+Book.objects.get(id=product_id)
+
+Result: <Book: 1984 by George Orwell (1949)>

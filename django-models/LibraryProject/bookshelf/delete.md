@@ -1,11 +1,7 @@
-# Delete Operation
-
-```python
 from bookshelf.models import Book
 
-# Retrieve the book and delete it
-book = Book.objects.get(title="Nineteen Eighty-Four")
-book.delete()
+Book.objects.filter(publication_year=1949).delete()
 
-# Confirm deletion
-Book.objects.all()
+["book.delete"]
+
+Returns: (1, {'bookshelf.Book': 1})

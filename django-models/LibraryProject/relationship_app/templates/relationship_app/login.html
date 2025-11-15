@@ -1,24 +1,18 @@
+<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <style>
-        .error { color: red; }
-        .success { color: green; }
-    </style>
-    {% if messages %}
-        {% for message in messages %}
-            <p class="{% if message.tags == 'error' %}error{% else %}success{% endif %}">
-                {{ message }}
-            </p>
-        {% endfor %}
-    {% endif %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Login</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Login</button>
     </form>
-    <a href="{% url 'relationship_app:register' %}">Register</a>
+    <a href="{% url 'register' %}">Register</a>
 </body>
 </html>

@@ -1,11 +1,9 @@
-# Update Operation
 
-```python
+
 from bookshelf.models import Book
 
-# Retrieve and update the book title
-book = Book.objects.get(title="1984")
-book.title = "Nineteen Eighty-Four"
-book.save()
+Book.objects.get(title="1984").update(title="Nineteen Eighty-Four")
 
-book
+["book.title", "Nineteen Eighty-Four"]
+
+Returns: 1 (Indicating number of objects updated)
