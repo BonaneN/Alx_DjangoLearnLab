@@ -1,12 +1,25 @@
 from django.contrib import admin
-from .models import Book
-
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
 # Register your models here.
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    # Display fields in admin
+    list_display = ("email", "date_of_birth", "is_staff", "is_active")
+    list_filter = ("is_staff", "is_active")
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Personal Info", {"fields": ("date_of_birth", "profile_photo")}),
+        ("Permissions", {"fields": ("is_staff", "is_active", "is_superuser", "groups", "user_permissions")}),
+    )
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "password1", "password2", "is_staff", "is_active")}
+        ),
+    )
+    search_fields = ("email",)
+    ordering = ("email",)
 
-class BookAdmin(admin.ModelAdmin):
-    list_filter = ("title", "author", "publication_year",)
-
-    search_fields = ("title", "author",)
-
-
-admin.site.register(Book, BookAdmin)
+# Register the custom user
+admin.site.register(CustomUser, CustomUserAdmin)

@@ -135,17 +135,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --- The BASE directory of this Django project is "C:\Users\Micheal\Videos\ALX_BE\django\intro_to_django\Alx_DjangoLearnLab\Alx_DjangoLearnLab\django-models\LibraryProject"
 # --- It correctly points to the location where the project files are stored, including the "templates" directory. which is of concern...
 
-# Security settings required by ALX checker
+# Tell Django to use our custom user
+AUTH_USER_MODEL = "bookshelf.CustomUser"
+
+# -------------------------
+# Security settings
+# -------------------------
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True
-
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
+# Task 3 secure headers
 SECURE_SSL_REDIRECT = True
-
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-AUTH_USER_MODEL = "bookshelf.CustomUser"
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

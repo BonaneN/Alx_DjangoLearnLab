@@ -3,8 +3,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import permission_required
 from .models import Book
 from .forms import ExampleForm, BookForm
-
-
 #my inclusions
 from django.http import HttpResponse
 
@@ -13,14 +11,13 @@ def index(request):
     response = "Welcome to the Book shelf 📚"
     return HttpResponse(response)
 
-def book_list(request):
-    books = Book.objects.all()
-    return render(request, "book_list.html", {"books": books})
-
-
-def form_example(request):
+def form_example_view(request):
     form = ExampleForm()
-    return render(request, "form_example.html", {"form": form})
+    return render(request, "bookshelf/form_example.html", {"form": form})
+
+def book_list_view(request):
+    books = Book.objects.all()
+    return render(request, "bookshelf/book_list.html", {"books": books})
 
 
 @permission_required("bookshelf.can_create", raise_exception=True)
