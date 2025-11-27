@@ -1,40 +1,51 @@
-from rest_framework import generics, permissions, filters
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.exceptions import NotFound
+from django.shortcuts import get_object_or_404
 from .models import Book
 from .serializers import BookSerializer
 
-# List all books
+
+# List all books - read-only for everyone
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['author__name', 'publication_year'] # Filtering by author's name and publication year
-    search_fields = ['title', 'author__name'] # Searching by title and author's name
-    ordering_fields = ['publication_year', 'title'] # Ordering by publication year and title
-    ordering = ['title'] # Default ordering
 
-# Retrieve a single book by ID
+# Retrieve a single book - read-only for everyone
 class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
-# Create a new book
+
+# Create a new book - authenticated users only
 class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-# Update an existing book
+
+# Update an existing book - authenticated users only
 class BookUpdateView(generics.UpdateAPIView):
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-# Delete a book
+    def get_object(self):  # type: ignore
+        book_id = self.request.GET.get('id')
+        if not book_id:
+            raise NotFound("Book ID is required")
+        return get_object_or_404(Book, pk=book_id)
+
+
+# Delete a book - authenticated users only
 class BookDeleteView(generics.DestroyAPIView):
-    queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):  # type: ignore
+        book_id = self.request.GET.get('id')
+        if not book_id:
+            raise NotFound("Book ID is required")
+        return get_object_or_404(Book, pk=book_id)
