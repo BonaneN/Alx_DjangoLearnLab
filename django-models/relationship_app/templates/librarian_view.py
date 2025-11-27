@@ -1,9 +1,0 @@
-
-<!DOCTYPE html>
-<html>
-<head><title>Librarian View</title></head>
-<body>
-    <h1>Welcome, Librarian!</h1>
-    <p>You can manage library books and records.</p>
-</body>
-</html>
