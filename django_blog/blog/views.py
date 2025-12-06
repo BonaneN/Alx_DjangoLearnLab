@@ -6,7 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from typing import cast
-from .models import Post, Comment
+from .models import Post, Comment, Tag
 from .forms import RegistrationForm, CommentForm
 
 # Authentication Views
@@ -49,10 +49,25 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['title', 'content']
     template_name = 'blog/post_form.html'
-
+    
     def form_valid(self, form):
+    # Assign the author
         form.instance.author = self.request.user
+
+    # Save the post object
+        post = form.save()
+
+    # Handle tags (if using a custom Tag model)
+        tags_str = form.cleaned_data.get("tags")  # Corrected syntax
+    
+        if tags_str:
+            tags = [name.strip() for name in tags_str.split(",")]
+            for name in tags:
+                tag_obj, created = Tag.objects.get_or_create(name=name)
+                post.tags.add(tag_obj)
+    
         return super().form_valid(form)
+
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
