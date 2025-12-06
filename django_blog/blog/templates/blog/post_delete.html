@@ -1,0 +1,18 @@
+<!-- post delete -->
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <title>Delete Post</title>
+</head>
+<body>
+    <h2>Delete Post</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete "{{ object.title }}"?</p>
+        <button type="submit">Confirm Delete</button>
+    </form>
+</html>

@@ -1,0 +1,19 @@
+<!-- post form -->
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+    <title>{% if form.instance.pk %}Edit Post{% else %}New Post{% endif %}</title>
+</head>
+<body>
+    <h2>{% if form.instance.pk %}Edit Post{% else %}New Post{% endif %}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">{% if form.instance.pk %}Update{% else %}Create{% endif %} Post</button>
+    </form>
+</body>
+</html>
