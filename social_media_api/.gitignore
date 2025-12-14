@@ -1,8 +1,0 @@
-__pycache__
-__migrations__
-*__migrations__
-db.sqlite3
-*.pyc
-.env
-*.log
-*.vscode
