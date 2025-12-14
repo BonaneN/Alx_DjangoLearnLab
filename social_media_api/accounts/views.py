@@ -5,6 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from .serializers import RegisterSerializer, UserSerializer
+from django.shortcuts import get_object_or_404
+from .models import CustomUser
 
 
 class RegisterView(APIView):
@@ -50,3 +52,21 @@ class ProfileView(APIView):
     def get(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+class FollowUserView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, user_id):
+        current_user:CustomUser = request.user
+        user_to_follow = get_object_or_404(CustomUser, id=user_id)
+        request.user.following.add(user_to_follow)
+        return Response({'detail': f"You are now following {user_to_follow}"}, status=status.HTTP_200_OK)
+
+class UnfollowUserView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, user_id):
+        current_user:CustomUser = request.user
+        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
+        request.user.following.remove(user_to_unfollow)
+        return Response({'detail': f"You have unfollowed {user_to_unfollow}"}, status=status.HTTP_200_OK)
