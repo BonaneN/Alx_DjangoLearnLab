@@ -1,6 +1,6 @@
-from rest_framework import viewsets
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, viewsets, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from permissions import IsOwnerOrReadOnly
@@ -17,6 +17,18 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        post.likes.add(request.user)
+        return Response({'status': 'post liked', 'likes_count': post.likes.count()})
+    
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def unlike(self, request, pk=None):
+        post = self.get_object()
+        post.likes.remove(request.user)
+        return Response({'status': 'post unliked', 'likes_count': post.likes.count()})
 
 
 # Comment CRUD
