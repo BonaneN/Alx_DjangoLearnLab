@@ -32,8 +32,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class FeedView(generics.ListAPIView):
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self)->Any:
-        user:CustomUser = self.request.user
-        return Post.objects.filter(user__in=self.request.user.following.all()).order_by('-created_at')
+        user: CustomUser = self.request.user
+        return Post.objects.filter(user__in=user.following.all()).order_by('-created_at')

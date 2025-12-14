@@ -10,4 +10,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('posts/<int:post_pk>/comments/', CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('posts/<int:post_pk>/comments/<int:pk>/', CommentViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    path('feed/', FeedView.as_view(), name='feed'),
 ]
