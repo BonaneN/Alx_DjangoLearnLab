@@ -1,52 +1,44 @@
-from rest_framework import generics, permissions, viewsets, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from permissions import IsOwnerOrReadOnly
-from typing import Any
-from django.contrib.auth import get_user_model
 
-CustomUser = get_user_model()
-
-# Post CRUD
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all() 
+    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(author=self.request.user)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         post = self.get_object()
         post.likes.add(request.user)
         return Response({'status': 'post liked', 'likes_count': post.likes.count()})
-    
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+
+    @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
         post = self.get_object()
         post.likes.remove(request.user)
         return Response({'status': 'post unliked', 'likes_count': post.likes.count()})
 
-
-# Comment CRUD
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
-    def get_queryset(self)->Any:
+    def get_queryset(self):
         return Comment.objects.all()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(author=self.request.user)
 
 class FeedView(generics.ListAPIView):
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self)->Any:
+    def get_queryset(self):
         user = self.request.user
-        following_users = user.following.all()  # assign to a variable for clarity
-        return Post.objects.filter(author__in=following_users).order_by('-created_at')
+        return Post.objects.filter(author__in=user.following.all()).order_by('-created_at')
